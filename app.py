@@ -17,9 +17,19 @@ class Notice(Model):
 @app.route("/")
 def index():
     notice_count = Notice.select().count()
-    notices_20906 = Notice.select().where(Notice.zip=='20906')
+    all_zips = (Notice.select(Notice.zip).distinct())
     template = 'index.html'
-    return render_template(template, count = notice_count, notices = notices_20906)
+    return render_template(template, count = notice_count, all_zips = all_zips)
+
+@app.route('/zipcode/<slug>')
+def detail(slug):
+    zipcode = slug
+    notices = Notice.select().where(Notice.zip==slug)
+    total_notices = Notice.select(fn.SUM(Notice.notices).alias('sum')).where(Notice.zip==slug).scalar()
+    notice_json = []
+    for notice in notices:
+        notice_json.append({'x': str(notice.month.year) + ' ' + str(notice.month.month), 'y': notice.zip, 'heat': notice.notices})
+    return render_template("detail.html", zipcode=zipcode, notices=notices, notices_count=len(notices), notice_json = notice_json, total_notices = total_notices)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
