@@ -1,9 +1,12 @@
+import os
+from peewee import *
+from census import Census
 from flask import Flask
 from flask import render_template
-from peewee import *
 app = Flask(__name__)
-
 db = SqliteDatabase('foreclosures.db')
+census_api_key = os.environ.get('CENSUS_API_KEY')
+c = Census(census_api_key)
 
 class Notice(Model):
     id = IntegerField(unique=True)
@@ -30,7 +33,8 @@ def detail(slug):
     notice_json = []
     for notice in notices:
         notice_json.append({'x': str(notice.month.year) + ' ' + str(notice.month.month), 'y': notice.zip, 'heat': notice.notices})
-    return render_template("detail.html", zipcode=zipcode, notices=notices, notices_count=len(notices), notice_json = notice_json, total_notices = total_notices)
+    owner_occupied = c.acs5.state_zipcode(('NAME', 'B25003_002E'), '24', zipcode)
+    return render_template("detail.html", zipcode=zipcode, notices=notices, notices_count=len(notices), notice_json = notice_json, total_notices = total_notices, owner_occupied = owner_occupied[0]['B25003_002E'])
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
