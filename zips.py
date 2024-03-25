@@ -25,7 +25,7 @@ rows_to_insert = []
 
 # loop over our zip codes, retrieving Census data where possible
 for zip in all_zips:
-    print(zip.zip)
+print(zip.zip)
 if zip.zip != "No Zip Code":
     owner_occupied = c.acs5.state_zipcode(('NAME', 'B25003_002E'), '24', zip.zip)
     if owner_occupied and 'B25003_002E' in owner_occupied[0]:
