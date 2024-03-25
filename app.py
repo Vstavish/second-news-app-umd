@@ -34,14 +34,13 @@ def index():
 
 @app.route('/zipcode/<slug>')
 def detail(slug):
-    zipcode = slug
+    zipcode = ZipCode.get(ZipCode.zipcode==slug)
     notices = Notice.select().where(Notice.zip==slug)
     total_notices = Notice.select(fn.SUM(Notice.notices).alias('sum')).where(Notice.zip==slug).scalar()
     notice_json = []
     for notice in notices:
         notice_json.append({'x': str(notice.month.year) + ' ' + str(notice.month.month), 'y': notice.zip, 'heat': notice.notices})
-    owner_occupied = c.acs5.state_zipcode(('NAME', 'B25003_002E'), '24', zipcode)
-    return render_template("detail.html", zipcode=zipcode, notices=notices, notices_count=len(notices), notice_json = notice_json, total_notices = total_notices, owner_occupied = int(owner_occupied[0]['B25003_002E']))
+    return render_template("detail.html", zipcode=zipcode, notices=notices, notices_count=len(notices), notice_json = notice_json, total_notices = total_notices)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
