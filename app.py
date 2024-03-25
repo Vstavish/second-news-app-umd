@@ -18,10 +18,17 @@ class Notice(Model):
         table_name = "notices"
         database = db
 
+class ZipCode(Model):
+    zipcode = CharField()
+    owner_occupied = IntegerField(null = True)
+
+    class Meta:
+        database = db
+
 @app.route("/")
 def index():
     notice_count = Notice.select().count()
-    all_zips = (Notice.select(Notice.zip).distinct())
+    all_zips = ZipCode.select()
     template = 'index.html'
     return render_template(template, count = notice_count, all_zips = all_zips)
 
