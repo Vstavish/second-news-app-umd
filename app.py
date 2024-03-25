@@ -22,7 +22,7 @@ def index():
     print(f"Zip code {notice.zip} had {notice.notices} in {notice.month}")
     notices_20906 = Notice.select().where(Notice.zip=='20906')
     for notice in notices_20906:
-    print(notice.notices)
+        print(notice.notices)
     template = 'index.html'
     return render_template(template)
 
